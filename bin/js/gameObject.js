@@ -1,12 +1,3 @@
-function CheckCollision(r1, r2) {
-    if (r1.x < r2.x + r2.width &&
-        r1.x + r1.width > r2.x &&
-        r1.y < r2.y + r2.height &&
-        r1.y + r1.height > r2.y) {
-        return true;
-    }
-    return false;
-}
 var DIR;
 (function (DIR) {
     DIR[DIR["DOWN"] = 0] = "DOWN";
@@ -73,6 +64,7 @@ class GameObject {
         this.createAt = Date.now();
     }
     DrawColRect(color) {
+        this.colRect.clear();
         this.colRect.lineStyle(1, color, 1);
         this.colRect.drawRect(
         // this.rect[0],
@@ -127,7 +119,9 @@ class GameObject {
         else {
             this.force.x += x;
             this.force.y += y;
-            console.log(`${x}, ${y} ${forceGiver.name} -> ${this.name} ${reason} ${this.force.x} ${this.force.y}`);
+            // console.log(
+            //   `${x}, ${y} ${forceGiver.name} -> ${this.name} ${reason} ${this.force.x} ${this.force.y}`
+            // );
         }
         // this.SetState(OBJ_STATE.MOVE);
     }
@@ -238,6 +232,18 @@ class GameObject {
                 return rect.y + rect.height / 2;
             case 0 /* DOWN */:
                 return rect.y + rect.height + rect.height / 2;
+        }
+    }
+    GetDirXY() {
+        switch (this.dir) {
+            case 0 /* DOWN */:
+                return [0, 1];
+            case 2 /* UP */:
+                return [0, -1];
+            case 1 /* LEFT */:
+                return [-1, 0];
+            case 3 /* RIGHT */:
+                return [1, 0];
         }
     }
 }

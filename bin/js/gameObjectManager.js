@@ -33,7 +33,7 @@ class GameObjectManager {
     }
     static Add(objX, objY, width, height, name, type, frame, owner) {
         let obj = null;
-        switch (name) {
+        switch (type) {
             case "player":
                 obj = new Player(GameObjectManager.game.game, objX, objY, width, height, name, type, frame, owner);
                 break;

@@ -55,7 +55,7 @@ class GameObjectManager {
   ): GameObject {
     let obj = null;
 
-    switch (name) {
+    switch (type) {
       case "player":
         obj = new Player(
           GameObjectManager.game.game,

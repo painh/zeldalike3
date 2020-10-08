@@ -102,7 +102,7 @@
   <object id="20" type="상자" gid="81" x="64" y="96" width="16" height="16"/>
   <object id="21" type="상자" gid="81" x="48" y="96" width="16" height="16"/>
   <object id="22" type="상자" gid="81" x="32" y="96" width="16" height="16"/>
-  <object id="23" type="goblin" gid="202" x="160" y="112" width="16" height="16"/>
+  <object id="23" name="goblin" type="goblin" gid="202" x="160" y="112" width="16" height="16"/>
   <object id="25" type="wall" x="0" y="0" width="16" height="160"/>
   <object id="26" type="wall" x="0" y="144" width="256" height="16"/>
   <object id="27" type="wall" x="240" y="0" width="16" height="160"/>

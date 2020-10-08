@@ -1,16 +1,3 @@
-function CheckCollision(r1, r2) {
-  if (
-    r1.x < r2.x + r2.width &&
-    r1.x + r1.width > r2.x &&
-    r1.y < r2.y + r2.height &&
-    r1.y + r1.height > r2.y
-  ) {
-    return true;
-  }
-
-  return false;
-}
-
 const enum DIR {
   DOWN = 0,
   LEFT = 1,
@@ -115,6 +102,7 @@ class GameObject {
   }
 
   DrawColRect(color) {
+    this.colRect.clear();
     this.colRect.lineStyle(1, color, 1);
 
     this.colRect.drawRect(
@@ -183,9 +171,9 @@ class GameObject {
     } else {
       this.force.x += x;
       this.force.y += y;
-      console.log(
-        `${x}, ${y} ${forceGiver.name} -> ${this.name} ${reason} ${this.force.x} ${this.force.y}`
-      );
+      // console.log(
+      //   `${x}, ${y} ${forceGiver.name} -> ${this.name} ${reason} ${this.force.x} ${this.force.y}`
+      // );
     }
 
     // this.SetState(OBJ_STATE.MOVE);
@@ -319,6 +307,19 @@ class GameObject {
 
       case DIR.DOWN:
         return rect.y + rect.height + rect.height / 2;
+    }
+  }
+
+  GetDirXY() {
+    switch (this.dir) {
+      case DIR.DOWN:
+        return [0, 1];
+      case DIR.UP:
+        return [0, -1];
+      case DIR.LEFT:
+        return [-1, 0];
+      case DIR.RIGHT:
+        return [1, 0];
     }
   }
 }
