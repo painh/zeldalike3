@@ -96,10 +96,10 @@ class GameObjectManager {
         // });
         if (colList.length == 0) {
             if (gameObj.MoveableObjectType()) {
-                gameObj.x += Math.floor(moveVector.x);
-                gameObj.y += Math.floor(moveVector.y);
-                gameObj.spr.x = gameObj.x;
-                gameObj.spr.y = gameObj.y;
+                gameObj.x += Math.round(moveVector.x);
+                gameObj.y += Math.round(moveVector.y);
+                gameObj.spr.x = Math.round(gameObj.x);
+                gameObj.spr.y = Math.round(gameObj.y);
                 gameObj.moved = true;
                 GameObjectManager.objMoved = true;
             }

@@ -33,8 +33,8 @@ namespace InputControl {
 
     graphics.visible = game.input.pointer1.active;
 
-    keys["Z"] = game.input.keyboard.addKey(Phaser.KeyCode.Z);
-    keys["X"] = game.input.keyboard.addKey(Phaser.KeyCode.X);
+    keys[Phaser.KeyCode.Z] = game.input.keyboard.addKey(Phaser.KeyCode.Z);
+    keys[Phaser.KeyCode.Y] = game.input.keyboard.addKey(Phaser.KeyCode.X);
 
     console.log(game.input.pointer1);
   }
@@ -97,12 +97,12 @@ namespace InputControl {
     return false;
   }
 
-  export function Down(code: string) {
+  export function Down(code: number) {
     if (keys[code].isDown) return true;
     return false;
   }
 
-  export function JustDown(code: string) {
+  export function JustDown(code: number) {
     if (keys[code].justDown) return true;
     return false;
   }

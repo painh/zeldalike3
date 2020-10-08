@@ -27,8 +27,8 @@ var InputControl;
         }
         cursors = game.input.keyboard.createCursorKeys();
         graphics.visible = game.input.pointer1.active;
-        keys["Z"] = game.input.keyboard.addKey(Phaser.KeyCode.Z);
-        keys["X"] = game.input.keyboard.addKey(Phaser.KeyCode.X);
+        keys[Phaser.KeyCode.Z] = game.input.keyboard.addKey(Phaser.KeyCode.Z);
+        keys[Phaser.KeyCode.Y] = game.input.keyboard.addKey(Phaser.KeyCode.X);
         console.log(game.input.pointer1);
     }
     InputControl.Init = Init;

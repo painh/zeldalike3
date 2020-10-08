@@ -93,31 +93,33 @@ class Game {
             // this.player.body.angle += 10;
             // console.log((Math.atan2(leftStickX, leftStickY) * 180) / Math.PI);
         }
+        let doAttack = false;
         if (this.player.CanAttack() &&
-            InputControl.Down("Z") &&
+            InputControl.Down(Phaser.KeyCode.Z) &&
             GameObjectManager.GetNameCnt("playerAttack") == 0) {
             const attack = GameObjectManager.Add(this.player.GetAttackX(), this.player.GetAttackY(), 0, 0, "playerAttack", "playerAttack", 0, this.player);
             attack.lifeTimeMS = 1;
+            doAttack = true;
         }
         if (this.player.CanMove()) {
             if (InputControl.LeftDown()) {
                 this.player.AddForce(-1, 0, this.player, "keydown", false);
-                if (GameObjectManager.GetNameCnt("playerAttack") == 0)
+                if (!doAttack)
                     this.player.SetDir(1 /* LEFT */);
             }
             if (InputControl.RightDown()) {
                 this.player.AddForce(1, 0, this.player, "keydown", false);
-                if (GameObjectManager.GetNameCnt("playerAttack") == 0)
+                if (!doAttack)
                     this.player.SetDir(3 /* RIGHT */);
             }
             if (InputControl.UpDown()) {
                 this.player.AddForce(0, -1, this.player, "keydown", false);
-                if (GameObjectManager.GetNameCnt("playerAttack") == 0)
+                if (!doAttack)
                     this.player.SetDir(2 /* UP */);
             }
             if (InputControl.DownDown()) {
                 this.player.AddForce(0, 1, this.player, "keydown", false);
-                if (GameObjectManager.GetNameCnt("playerAttack") == 0)
+                if (!doAttack)
                     this.player.SetDir(0 /* DOWN */);
             }
         }

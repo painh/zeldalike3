@@ -127,8 +127,8 @@ class GameObject {
       // this.rect[2] - 1,
       // this.rect[3] - 1
 
-      this.rect[0],
-      this.rect[1],
+      Math.round(this.rect[0]),
+      Math.round(this.rect[1]),
       this.rect[2] - 1,
       this.rect[3] - 1
     );
@@ -183,6 +183,9 @@ class GameObject {
     } else {
       this.force.x += x;
       this.force.y += y;
+      console.log(
+        `${x}, ${y} ${forceGiver.name} -> ${this.name} ${reason} ${this.force.x} ${this.force.y}`
+      );
     }
 
     // this.SetState(OBJ_STATE.MOVE);
@@ -244,7 +247,7 @@ class GameObject {
 
   Update() {
     if (this.isDead) {
-      return;
+      return false;
     }
     this.moved = false;
 
@@ -255,6 +258,8 @@ class GameObject {
         return true;
       }
     }
+
+    return true;
 
     // console.log("player", this.force.getMagnitude(), this.state);
   }
