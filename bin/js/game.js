@@ -5,6 +5,7 @@ class Game {
         GameObjectManager.Init(this);
         // this.game = new Phaser.Game(256, 240, Phaser.CANVAS, "", {
         this.game = new Phaser.Game(256, 16 * 10, Phaser.AUTO, "game", {
+            // this.game = new Phaser.Game(256 * 3, 16 * 10 * 3, Phaser.AUTO, "game", {
             preload: () => this.preload(),
             init: () => this.init(),
             create: () => this.create(),
@@ -14,7 +15,7 @@ class Game {
     }
     preload() {
         this.game.load.tilemap("room1", "assets/map.json", null, Phaser.Tilemap.TILED_JSON);
-        this.game.load.spritesheet("gamesprite", "assets/16x16_Jerom_CC-BY-SA-3.0.png", TILE_SIZE, TILE_SIZE, 200);
+        this.game.load.spritesheet("gamesprite", "assets/16x16_Jerom_CC-BY-SA-3.0.png", TILE_SIZE, TILE_SIZE);
         this.game.world.setBounds(0, 0, this.game.width, this.game.height - 16 * 5);
         // this.game.stage.disableVisibilityChange = true;
     }
@@ -52,12 +53,11 @@ class Game {
         }
     }
     createObj(obj) {
-        // console.log(obj);
+        console.log(obj);
+        let mapObj = GameObjectManager.Add(obj.x, obj.y, obj.width, obj.height, obj.name, obj.type, obj.gid - 1, null);
         if (obj.type == "player") {
-            this.player = GameObjectManager.Add(obj.x, obj.y, obj.type, obj.gid - 1, null);
-            return this.player;
+            this.player = mapObj;
         }
-        let mapObj = GameObjectManager.Add(obj.x, obj.y, obj.type, obj.gid - 1, null);
         return mapObj;
     }
     create() {
@@ -91,30 +91,34 @@ class Game {
             //     360 - (Math.atan2(leftStickX, leftStickY) * 180) / Math.PI;
             // }
             // this.player.body.angle += 10;
-            console.log((Math.atan2(leftStickX, leftStickY) * 180) / Math.PI);
+            // console.log((Math.atan2(leftStickX, leftStickY) * 180) / Math.PI);
+        }
+        if (this.player.CanAttack() &&
+            InputControl.Down("Z") &&
+            GameObjectManager.GetNameCnt("playerAttack") == 0) {
+            const attack = GameObjectManager.Add(this.player.GetAttackX(), this.player.GetAttackY(), 0, 0, "playerAttack", "playerAttack", 0, this.player);
+            attack.lifeTimeMS = 1;
         }
         if (this.player.CanMove()) {
             if (InputControl.LeftDown()) {
-                this.player.AddForce(-1, 0, this.player, "keydown", true);
-                this.player.SetDir(1 /* LEFT */);
+                this.player.AddForce(-1, 0, this.player, "keydown", false);
+                if (GameObjectManager.GetNameCnt("playerAttack") == 0)
+                    this.player.SetDir(1 /* LEFT */);
             }
-            else if (InputControl.RightDown()) {
-                this.player.AddForce(1, 0, this.player, "keydown", true);
-                this.player.SetDir(3 /* RIGHT */);
+            if (InputControl.RightDown()) {
+                this.player.AddForce(1, 0, this.player, "keydown", false);
+                if (GameObjectManager.GetNameCnt("playerAttack") == 0)
+                    this.player.SetDir(3 /* RIGHT */);
             }
             if (InputControl.UpDown()) {
-                this.player.AddForce(0, -1, this.player, "keydown", true);
-                this.player.SetDir(2 /* UP */);
+                this.player.AddForce(0, -1, this.player, "keydown", false);
+                if (GameObjectManager.GetNameCnt("playerAttack") == 0)
+                    this.player.SetDir(2 /* UP */);
             }
-            else if (InputControl.DownDown()) {
-                this.player.AddForce(0, 1, this.player, "keydown", true);
-                this.player.SetDir(0 /* DOWN */);
-            }
-            if (this.player.CanAttack() &&
-                InputControl.JustDown("Z") &&
-                GameObjectManager.GetNameCnt("playerAttack") == 0) {
-                const attack = GameObjectManager.Add(this.player.GetAttackX(), this.player.GetAttackY(), "playerAttack", 0, this.player);
-                attack.lifeTimeMS = 1000;
+            if (InputControl.DownDown()) {
+                this.player.AddForce(0, 1, this.player, "keydown", false);
+                if (GameObjectManager.GetNameCnt("playerAttack") == 0)
+                    this.player.SetDir(0 /* DOWN */);
             }
         }
         GameObjectManager.Update();

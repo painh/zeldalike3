@@ -4,11 +4,14 @@ class PlayerAttack extends GameObject {
     game: Phaser.Game,
     objX: number,
     objY: number,
+    width: number,
+    height: number,
     name: string,
+    type: string,
     frame: number,
     owner: GameObject
   ) {
-    super(game, objX, objY, name, frame, owner);
+    super(game, objX, objY, width, height, name, type, frame, owner);
 
     const thick = 5;
 
@@ -28,7 +31,7 @@ class PlayerAttack extends GameObject {
 
     this.DrawColRect(0xff0000);
 
-    const power = 10;
+    const power = 120;
 
     switch (owner.dir) {
       case DIR.LEFT:
@@ -44,6 +47,10 @@ class PlayerAttack extends GameObject {
         this.force = new Force(0, power, owner, "attack-D");
         break;
     }
+  }
+
+  MoveableObjectType() {
+    return false;
   }
 
   CanMove() {

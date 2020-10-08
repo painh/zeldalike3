@@ -1,0 +1,1 @@
+class Goblin extends GameObject {}

@@ -46,7 +46,10 @@ class GameObjectManager {
   static Add(
     objX: number,
     objY: number,
+    width: number,
+    height: number,
     name: string,
+    type: string,
     frame: number,
     owner: GameObject
   ): GameObject {
@@ -58,7 +61,10 @@ class GameObjectManager {
           GameObjectManager.game.game,
           objX,
           objY,
+          width,
+          height,
           name,
+          type,
           frame,
           owner
         );
@@ -69,7 +75,24 @@ class GameObjectManager {
           GameObjectManager.game.game,
           objX,
           objY,
+          width,
+          height,
           name,
+          type,
+          frame,
+          owner
+        );
+        break;
+
+      case "goblin":
+        obj = new Goblin(
+          GameObjectManager.game.game,
+          objX,
+          objY,
+          width,
+          height,
+          name,
+          type,
           frame,
           owner
         );
@@ -80,7 +103,10 @@ class GameObjectManager {
           GameObjectManager.game.game,
           objX,
           objY,
+          width,
+          height,
           name,
+          type,
           frame,
           owner
         );
@@ -116,23 +142,50 @@ class GameObjectManager {
 
     let fx = gameObj.force.x;
     let fy = gameObj.force.y;
-    const newRect = gameObj.GetRect(fx, fy);
+    let newRect;
+    const moveVector = new Vector(fx, fy);
+    if (moveVector.getMagnitude() >= 1) moveVector.setMagnitude(1);
+
+    if (gameObj.MoveableObjectType())
+      newRect = gameObj.GetRect(moveVector.x, moveVector.y);
+    else newRect = gameObj.GetRect(0, 0);
+
     const colList: GameObject[] = GameObjectManager.CheckCollision(
       newRect,
       gameObj,
       true
     );
 
-    if (colList.length == 0 && gameObj.CanMove()) {
-      const moveVector = new Vector(fx, fy);
-      if (moveVector.getMagnitude() >= 1) moveVector.setMagnitude(1);
-      gameObj.x = gameObj.spr.x += moveVector.x;
-      gameObj.y = gameObj.spr.y += moveVector.y;
-      gameObj.moved = true;
-      GameObjectManager.objMoved = true;
-      console.log(this.name);
+    const alreadCollied: GameObject[] = GameObjectManager.CheckCollision(
+      gameObj.GetRect(0, 0),
+      gameObj,
+      true
+    );
+
+    // colList.forEach((e, k, list) => {
+    //   alreadCollied.forEach((e2) => {
+    //     if (e == e2) {
+    //       list.splice(k, 1);
+    //       // console.log("이미 겹쳐짐", e.name);
+    //     }
+    //   });
+    // });
+
+    if (colList.length == 0) {
+      if (gameObj.MoveableObjectType()) {
+        gameObj.x += Math.floor(moveVector.x);
+        gameObj.y += Math.floor(moveVector.y);
+        gameObj.spr.x = gameObj.x;
+        gameObj.spr.y = gameObj.y;
+
+        gameObj.moved = true;
+        GameObjectManager.objMoved = true;
+      }
+      // console.log(this.name);
 
       return true;
+    } else {
+      // gameObj.force.setMagnitude(0);
     }
 
     for (let i in colList) {
@@ -141,7 +194,14 @@ class GameObjectManager {
       if (!GameObjectManager.CollisionChecked(targetObj, gameObj)) {
         GameObjectManager.RegisterCollisionChecked(targetObj, gameObj);
         targetObj.AddForce(fx, fy, gameObj, "checkCollision", false);
-        GameObjectManager.Move(targetObj);
+        // console.log(
+        //   `${gameObj.name} -> ${targetObj.name}`,
+        //   moveVector.x,
+        //   moveVector.y
+        // );
+
+        gameObj.force.setMagnitude(0);
+        // GameObjectManager.Move(targetObj);
       }
     }
 
@@ -171,6 +231,8 @@ class GameObjectManager {
         mag = 0;
       }
       gameObj.force.setMagnitude(mag);
+
+      // if (thismag > 0) console.log(gameObj.name, gameObj.type, thismag, mag);
     });
   }
 
@@ -189,7 +251,7 @@ class GameObjectManager {
     this.list.forEach((e) => {
       if (e == me) return;
       if (checkOwner && (me.owner == e || e.owner == me)) {
-        console.log(e.name, me.name, "owner!");
+        // console.log(e.name, me.name, "owner!");
         return;
       }
       if (CheckCollision(checkRect, e.GetRect(0, 0))) list.push(e);

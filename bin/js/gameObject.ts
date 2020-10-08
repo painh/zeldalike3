@@ -48,6 +48,7 @@ class GameObject {
   weight: number;
   rect: number[] = [];
   name: string;
+  type: string;
   createAt: number;
   lifeTimeMS: number = 0;
   isDead: boolean = false;
@@ -63,7 +64,10 @@ class GameObject {
     game: Phaser.Game,
     objX: number,
     objY: number,
+    width: number,
+    height: number,
     name: string,
+    type: string,
     frame: number,
     owner: GameObject
   ) {
@@ -73,25 +77,38 @@ class GameObject {
     this.force = new Force(0, 0, this, "init");
 
     this.name = name;
-    this.spr = game.add.sprite(objX, objY, GameObjectManager.sprName);
-    this.spr.frame = frame;
-    this.spr.anchor.set(0.5);
-    this.spr.smoothed = false;
+    this.type = type;
 
-    this.x = objX;
-    this.y = objY;
-
-    if (!STATIC_OBJ[name]) {
-      throw Error(`invalid name ${name}`);
+    if (this.type == "wall") {
+      this.x = objX;
+      this.y = objY;
+    } else {
+      this.x = objX + TILE_SIZE / 2;
+      this.y = objY - TILE_SIZE / 2;
     }
 
-    this.weight = STATIC_OBJ[name].weight;
-    this.rect = STATIC_OBJ[name].rect;
+    if (this.type != "wall") {
+      this.spr = game.add.sprite(this.x, this.y, GameObjectManager.sprName);
+      this.spr.frame = frame;
+      this.spr.anchor.set(0.5);
+      this.spr.smoothed = false;
+    }
 
-    this.colRect = game.add.graphics(
-      this.x - TILE_SIZE / 2,
-      this.y - TILE_SIZE / 2
-    );
+    let staticData = STATIC_OBJ[name];
+
+    if (!staticData) {
+      // throw Error(`invalid name ${name}`);
+      staticData = {};
+      staticData.weight = 10;
+    }
+
+    this.weight = staticData.weight;
+    // this.rect = staticData.rect;
+    if (this.type == "wall")
+      this.rect = [0 + TILE_SIZE / 2, 0 + TILE_SIZE / 2, width, height];
+    else this.rect = [0, 0, width, height];
+
+    this.colRect = game.add.graphics(this.x, this.y);
 
     this.DrawColRect(0x00ff00);
     this.createAt = Date.now();
@@ -101,8 +118,17 @@ class GameObject {
     this.colRect.lineStyle(1, color, 1);
 
     this.colRect.drawRect(
-      this.rect[0] + 0.5,
-      this.rect[1] + 0.5,
+      // this.rect[0],
+      // this.rect[1],
+      // this.rect[2],
+      // this.rect[3]
+      // this.rect[0] + 0.5,
+      // this.rect[1] + 0.5,
+      // this.rect[2] - 1,
+      // this.rect[3] - 1
+
+      this.rect[0],
+      this.rect[1],
       this.rect[2] - 1,
       this.rect[3] - 1
     );
@@ -145,10 +171,11 @@ class GameObject {
     y: number,
     forceGiver: GameObject,
     reason: string,
-    setOp
+    setOp: boolean
   ) {
     if (this.weight == 255) return;
     // console.log(`${x}, ${y} ${forceGiver.name} -> ${this.name} ${reason}`);
+    if (!this.MoveableObjectType()) return;
 
     if (setOp) {
       this.force.x = x;
@@ -248,10 +275,18 @@ class GameObject {
   }
 
   CanMove() {
+    if (this.type == "wall") return false;
+
     if (this.state == OBJ_STATE.IDLE || this.state == OBJ_STATE.MOVE)
       return true;
 
     return false;
+  }
+
+  MoveableObjectType() {
+    if (this.type == "wall") return false;
+
+    return true;
   }
 
   GetAttackX() {
@@ -259,12 +294,12 @@ class GameObject {
     switch (this.dir) {
       case DIR.DOWN:
       case DIR.UP:
-        return rect.x + rect.width / 2;
-      case DIR.LEFT:
         return rect.x;
+      case DIR.LEFT:
+        return rect.x - rect.width / 2;
 
       case DIR.RIGHT:
-        return rect.x + rect.width;
+        return rect.x + rect.width / 2;
     }
   }
 
@@ -273,12 +308,12 @@ class GameObject {
     switch (this.dir) {
       case DIR.LEFT:
       case DIR.RIGHT:
-        return rect.y + rect.height / 2;
+        return rect.y + rect.height;
       case DIR.UP:
-        return rect.y;
+        return rect.y + rect.height / 2;
 
       case DIR.DOWN:
-        return rect.y + rect.height;
+        return rect.y + rect.height + rect.height / 2;
     }
   }
 }

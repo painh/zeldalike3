@@ -29,7 +29,7 @@ class Force extends Vector {
     }
 }
 class GameObject {
-    constructor(game, objX, objY, name, frame, owner) {
+    constructor(game, objX, objY, width, height, name, type, frame, owner) {
         this.rect = [];
         this.lifeTimeMS = 0;
         this.isDead = false;
@@ -41,24 +41,49 @@ class GameObject {
         this.owner = owner;
         this.force = new Force(0, 0, this, "init");
         this.name = name;
-        this.spr = game.add.sprite(objX, objY, GameObjectManager.sprName);
-        this.spr.frame = frame;
-        this.spr.anchor.set(0.5);
-        this.spr.smoothed = false;
-        this.x = objX;
-        this.y = objY;
-        if (!STATIC_OBJ[name]) {
-            throw Error(`invalid name ${name}`);
+        this.type = type;
+        if (this.type == "wall") {
+            this.x = objX;
+            this.y = objY;
         }
-        this.weight = STATIC_OBJ[name].weight;
-        this.rect = STATIC_OBJ[name].rect;
-        this.colRect = game.add.graphics(this.x - TILE_SIZE / 2, this.y - TILE_SIZE / 2);
+        else {
+            this.x = objX + TILE_SIZE / 2;
+            this.y = objY - TILE_SIZE / 2;
+        }
+        if (this.type != "wall") {
+            this.spr = game.add.sprite(this.x, this.y, GameObjectManager.sprName);
+            this.spr.frame = frame;
+            this.spr.anchor.set(0.5);
+            this.spr.smoothed = false;
+        }
+        let staticData = STATIC_OBJ[name];
+        if (!staticData) {
+            // throw Error(`invalid name ${name}`);
+            staticData = {};
+            staticData.weight = 10;
+        }
+        this.weight = staticData.weight;
+        // this.rect = staticData.rect;
+        if (this.type == "wall")
+            this.rect = [0 + TILE_SIZE / 2, 0 + TILE_SIZE / 2, width, height];
+        else
+            this.rect = [0, 0, width, height];
+        this.colRect = game.add.graphics(this.x, this.y);
         this.DrawColRect(0x00ff00);
         this.createAt = Date.now();
     }
     DrawColRect(color) {
         this.colRect.lineStyle(1, color, 1);
-        this.colRect.drawRect(this.rect[0] + 0.5, this.rect[1] + 0.5, this.rect[2] - 1, this.rect[3] - 1);
+        this.colRect.drawRect(
+        // this.rect[0],
+        // this.rect[1],
+        // this.rect[2],
+        // this.rect[3]
+        // this.rect[0] + 0.5,
+        // this.rect[1] + 0.5,
+        // this.rect[2] - 1,
+        // this.rect[3] - 1
+        this.rect[0], this.rect[1], this.rect[2] - 1, this.rect[3] - 1);
     }
     Release() {
         this.spr.destroy();
@@ -93,6 +118,8 @@ class GameObject {
         if (this.weight == 255)
             return;
         // console.log(`${x}, ${y} ${forceGiver.name} -> ${this.name} ${reason}`);
+        if (!this.MoveableObjectType())
+            return;
         if (setOp) {
             this.force.x = x;
             this.force.y = y;
@@ -176,20 +203,27 @@ class GameObject {
         return false;
     }
     CanMove() {
+        if (this.type == "wall")
+            return false;
         if (this.state == 0 /* IDLE */ || this.state == 2 /* MOVE */)
             return true;
         return false;
+    }
+    MoveableObjectType() {
+        if (this.type == "wall")
+            return false;
+        return true;
     }
     GetAttackX() {
         const rect = this.GetRect(0, 0);
         switch (this.dir) {
             case 0 /* DOWN */:
             case 2 /* UP */:
-                return rect.x + rect.width / 2;
-            case 1 /* LEFT */:
                 return rect.x;
+            case 1 /* LEFT */:
+                return rect.x - rect.width / 2;
             case 3 /* RIGHT */:
-                return rect.x + rect.width;
+                return rect.x + rect.width / 2;
         }
     }
     GetAttackY() {
@@ -197,11 +231,11 @@ class GameObject {
         switch (this.dir) {
             case 1 /* LEFT */:
             case 3 /* RIGHT */:
-                return rect.y + rect.height / 2;
-            case 2 /* UP */:
-                return rect.y;
-            case 0 /* DOWN */:
                 return rect.y + rect.height;
+            case 2 /* UP */:
+                return rect.y + rect.height / 2;
+            case 0 /* DOWN */:
+                return rect.y + rect.height + rect.height / 2;
         }
     }
 }

@@ -1,7 +1,7 @@
 const STATIC_OBJ = {
   player: {
     weight: 10,
-    rect: [0, 0, 16, 16],
+    rect: [1, 1, 14, 14],
   },
 
   상자: {
@@ -11,12 +11,17 @@ const STATIC_OBJ = {
 
   tree: {
     weight: 255,
-    rect: [0, 0, 16, 16],
+    rect: [1, 1, 14, 14],
     // rect: [5, 5, 16 - 5 * 2, 16 - 5 * 2],
   },
 
   playerAttack: {
     weight: 10,
-    rect: [0, 0, 16, 16],
+    rect: [1, 1, 14, 14],
+  },
+
+  goblin: {
+    weight: 10,
+    rect: [1, 1, 14, 14],
   },
 };
